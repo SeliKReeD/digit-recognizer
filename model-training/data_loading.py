@@ -19,7 +19,7 @@ def load_train_data():
     features = np.array(features).astype(float)
     labels = np.array(labels).astype(float)
 
-    split_index = int(len(features)*configuration.validation_split_ratio)
+    split_index = int(len(features) * configuration.validation_split_ratio)
 
     validation_features = features[split_index:]
     validation_labels = labels[split_index:]
@@ -36,3 +36,14 @@ def load_train_data():
     print("Validation labels array with shape: ", validation_labels.shape)
 
     return (train_features, train_labels), (validation_features, validation_labels)
+
+
+def load_test_data():
+    features = []
+    with open(configuration.test_data_file_path) as test_csv_file:
+        test_csv_reader = csv.reader(test_csv_file, delimiter=',')
+        next(test_csv_reader)
+        for row in test_csv_reader:
+            features.append(row)
+    features = np.array(features).astype(float)
+    return features

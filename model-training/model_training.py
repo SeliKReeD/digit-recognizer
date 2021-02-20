@@ -1,7 +1,12 @@
 import data_loading
 import model_definition
+import configuration
+import data_visualization
+import tensorflow.keras.callbacks
 from tensorflow.keras import backend as K
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
+
+from datetime import datetime
 
 (X_train, y_train), (X_validation, y_validation) = data_loading.load_train_data()
 
@@ -30,9 +35,24 @@ validation_data_generator = validation_data_augmentation.flow(X_validation, y_va
 
 model = model_definition.get_model(input_shape, 'adam', 'categorical_crossentropy', ['accuracy'])
 
+early_stopping_callback = tensorflow.keras.callbacks.EarlyStopping(patience=10, restore_best_weights=True)
+
 history = model.fit(train_data_generator,
                     steps_per_epoch=int(len(X_train) / 32),
                     epochs=10,
                     validation_data=validation_data_generator,
-                    validation_steps=int(len(X_validation) / 32))
+                    validation_steps=int(len(X_validation) / 32),
+                    callbacks=[early_stopping_callback])
 
+loss = model.evaluate_generator(validation_data_generator)[0]
+loss = int(loss * 1000)
+loss = loss/1000.
+accuracy = model.evaluate_generator(validation_data_generator)[1]
+accuracy = int(accuracy * 1000)
+accuracy = accuracy/1000.
+
+model_name = datetime.now().strftime("%d-%m-%Y-%H-%M-%S-SNAPSHOT") + f"-l-{loss}-a-{accuracy}" + ".h5"
+
+model.save(f"{configuration.root_data_directory}/snapshots/{model_name}")
+
+print(f"Model {model_name} is saved with given metrics: loss={loss}, accuracy={accuracy}")
