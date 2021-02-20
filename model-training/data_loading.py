@@ -14,8 +14,8 @@ def load_train_data(train_file_path, test_file_path):
             features.append(row[1:])
             labels.append(row[0])
 
-    features = np.array(features)
-    labels = np.array(labels)
+    features = np.array(features).astype(float)
+    labels = np.array(labels).astype(float)
 
     with open(test_file_path) as test_csv_file:
         test_csv_reader = csv.reader(test_csv_file, delimiter=',')
@@ -23,13 +23,10 @@ def load_train_data(train_file_path, test_file_path):
         for row in test_csv_reader:
             validation.append(row)
 
-    validation = np.array(validation)
+    validation = np.array(validation).astype(float)
 
     print("Loaded features array from train file with shape: ", features.shape)
     print("Loaded labels array from train file with shape: ", labels.shape)
 
     print("Loaded validation array from test file with shape: ", validation.shape)
     return (features, labels), validation
-
-
-load_train_data(configuration.train_data_file_path, configuration.test_data_file_path)
