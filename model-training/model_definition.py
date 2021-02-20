@@ -3,17 +3,13 @@ from tensorflow.keras.layers import Dense, Conv2D, Dropout, BatchNormalization, 
 from tensorflow.keras import backend as K
 
 
-def get_model(input_shape):
+def get_model(input_shape, optimizer, loss_function, metrics):
     model = Sequential([
-        Conv2D(128, kernel_size=(3, 3), activation='relu', input_shape=input_shape),
+        Conv2D(64, kernel_size=(3, 3), activation='relu', input_shape=input_shape),
         MaxPooling2D((2, 2)),
         Dropout(0.25),
 
         Conv2D(64, kernel_size=(3, 3), activation='relu'),
-        MaxPooling2D((2, 2)),
-        Dropout(0.25),
-
-        Conv2D(32, kernel_size=(3, 3), activation='relu'),
         MaxPooling2D((2, 2)),
         Dropout(0.25),
 
@@ -25,6 +21,8 @@ def get_model(input_shape):
         Dense(10, activation='softmax')
     ])
 
+    model.compile(optimizer, loss_function, metrics=metrics)
+
     return model
 
 
@@ -32,6 +30,6 @@ if K.image_data_format() == 'channels_first':
     i_shape = (1, 28, 28)
 else:
     i_shape = (28, 28, 1)
-model_temp = get_model(i_shape)
+model_temp = get_model(i_shape, 'adam', 'categorical_crossentropy', ['accuracy'])
 
 model_temp.summary()
