@@ -22,7 +22,7 @@ class Canvas(QtWidgets.QLabel):
         self.last_x, self.last_y = None, None
         # Make pen color white.
         self.pen_color = QtGui.QColor('#ffffff')
-        self.model = load_model('myModel.h5')
+        self.model = load_model('data/snapshots/20-02-2021-21-02-30-SNAPSHOT-l-0.035-a-0.99.h5')
 
     def mouseMoveEvent(self, e):
         # First drawing.
