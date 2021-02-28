@@ -46,4 +46,4 @@ def load_test_data():
         for row in test_csv_reader:
             features.append(row)
     features = np.array(features).astype(float)
-    return features
+    return features / 255.
