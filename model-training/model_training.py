@@ -8,6 +8,8 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 from datetime import datetime
 
+batch_size = 256
+
 (X_train, y_train), (X_validation, y_validation) = data_loading.load_train_data()
 
 if K.image_data_format == 'channels_first':
@@ -30,18 +32,18 @@ train_data_augmentation = ImageDataGenerator(
 
 validation_data_augmentation = ImageDataGenerator(rescale=1 / 255.)
 
-train_data_generator = train_data_augmentation.flow(X_train, y_train)
-validation_data_generator = validation_data_augmentation.flow(X_validation, y_validation)
+train_data_generator = train_data_augmentation.flow(X_train, y_train, batch_size=batch_size)
+validation_data_generator = validation_data_augmentation.flow(X_validation, y_validation, batch_size=batch_size)
 
 model = model_definition.get_model(input_shape, 'adam', 'categorical_crossentropy', ['accuracy'])
 
-early_stopping_callback = tensorflow.keras.callbacks.EarlyStopping(patience=10, restore_best_weights=True)
+early_stopping_callback = tensorflow.keras.callbacks.EarlyStopping(patience=25, restore_best_weights=True)
 
 history = model.fit(train_data_generator,
-                    steps_per_epoch=int(len(X_train) / 32),
-                    epochs=10,
+                    steps_per_epoch=int(len(X_train) / batch_size),
+                    epochs=100,
                     validation_data=validation_data_generator,
-                    validation_steps=int(len(X_validation) / 32),
+                    validation_steps=int(len(X_validation) / batch_size),
                     callbacks=[early_stopping_callback])
 
 loss = model.evaluate_generator(validation_data_generator)[0]
